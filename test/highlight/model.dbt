@@ -1,0 +1,25 @@
+{{ config(materialized='incremental') }}
+{# <- tag.delimiter #}
+{# ^ function.builtin #}
+{#        ^ variable.parameter #}
+{#                      ^ string #}
+select * from {{ ref('orders') }}
+{#               ^ function.builtin #}
+{% if is_incremental() %}
+{# <- tag.delimiter #}
+{# ^ keyword.conditional #}
+{#    ^ function.builtin #}
+where ts > (select max(ts) from {{ this }})
+{#                                 ^ variable.builtin #}
+{% endif %}
+{# ^ keyword.conditional #}
+{% for c in cols if c != 'id' %}{{ c | lower }}{% endfor %}
+{# ^ keyword.repeat #}
+{#       ^ keyword.repeat #}
+{#                    ^ operator #}
+{#                                     ^ function.call #}
+{#                                                ^ keyword.repeat #}
+{% macro grant(role) %}{{ role }}{% endmacro %}
+{# ^ keyword.function #}
+{#       ^ function #}
+{#             ^ variable.parameter #}

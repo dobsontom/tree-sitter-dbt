@@ -1,0 +1,343 @@
+============================================================
+whitespace control
+============================================================
+{{- a -}}{{+ b +}}{{ c }}
+
+------------------------------------------------------------
+
+(source_file
+  (output
+    (identifier))
+  (output
+    (identifier))
+  (output
+    (identifier))
+  (content))
+
+============================================================
+dbt context
+============================================================
+select * from {{ ref('stg_orders') }} join {{ source("raw", 'orders') }}
+
+------------------------------------------------------------
+
+(source_file
+  (content)
+  (output
+    (call
+      (identifier)
+      (argument_list
+        (string
+          (string_content)))))
+  (content)
+  (output
+    (call
+      (identifier)
+      (argument_list
+        (string
+          (string_content))
+        (string
+          (string_content)))))
+  (content))
+
+============================================================
+config with keyword arguments
+============================================================
+{{ config(materialized='incremental', unique_key=['id', 'day'], tags=[], enabled=true, partition_by={'field': 'day', 'granularity': 'day'}) }}
+
+------------------------------------------------------------
+
+(source_file
+  (output
+    (call
+      (identifier)
+      (argument_list
+        (keyword_argument
+          (identifier)
+          (string
+            (string_content)))
+        (keyword_argument
+          (identifier)
+          (list
+            (string
+              (string_content))
+            (string
+              (string_content))))
+        (keyword_argument
+          (identifier)
+          (list))
+        (keyword_argument
+          (identifier)
+          (boolean))
+        (keyword_argument
+          (identifier)
+          (dict
+            (pair
+              (string
+                (string_content))
+              (string
+                (string_content)))
+            (pair
+              (string
+                (string_content))
+              (string
+                (string_content))))))))
+  (content))
+
+============================================================
+attributes, subscripts and calls
+============================================================
+{{ adapter.dispatch('x', 'pkg')(a, *args, **kwargs)[0].name }}
+
+------------------------------------------------------------
+
+(source_file
+  (output
+    (attribute
+      (subscript
+        (call
+          (call
+            (attribute
+              (identifier)
+              (identifier))
+            (argument_list
+              (string
+                (string_content))
+              (string
+                (string_content))))
+          (argument_list
+            (identifier)
+            (list_splat
+              (identifier))
+            (dictionary_splat
+              (identifier))))
+        (integer))
+      (identifier)))
+  (content))
+
+============================================================
+slices
+============================================================
+{{ cols[1:] }}{{ cols[:-1] }}{{ cols[::2] }}
+
+------------------------------------------------------------
+
+(source_file
+  (output
+    (subscript
+      (identifier)
+      (slice
+        (integer))))
+  (output
+    (subscript
+      (identifier)
+      (slice
+        (unary_operator
+          (integer)))))
+  (output
+    (subscript
+      (identifier)
+      (slice
+        (integer))))
+  (content))
+
+============================================================
+filters
+============================================================
+{{ cols | map(attribute='name') | join(', ') | upper }}{{ x|default('a') }}
+
+------------------------------------------------------------
+
+(source_file
+  (output
+    (filter_expression
+      (filter_expression
+        (filter_expression
+          (identifier)
+          (identifier)
+          (argument_list
+            (keyword_argument
+              (identifier)
+              (string
+                (string_content)))))
+        (identifier)
+        (argument_list
+          (string
+            (string_content))))
+      (identifier)))
+  (output
+    (filter_expression
+      (identifier)
+      (identifier)
+      (argument_list
+        (string
+          (string_content)))))
+  (content))
+
+============================================================
+tests
+============================================================
+{{ a is defined and b is not none and c is divisibleby 3 and d is sameas(false) }}
+
+------------------------------------------------------------
+
+(source_file
+  (output
+    (boolean_operator
+      (boolean_operator
+        (boolean_operator
+          (test_expression
+            (identifier)
+            (identifier))
+          (test_expression
+            (identifier)
+            (identifier)))
+        (test_expression
+          (identifier)
+          (identifier)
+          (integer)))
+      (test_expression
+        (identifier)
+        (identifier)
+        (argument_list
+          (boolean)))))
+  (content))
+
+============================================================
+precedence
+============================================================
+{{ not a or b and c == d + e ~ f * g ** -h | i }}
+
+------------------------------------------------------------
+
+(source_file
+  (output
+    (boolean_operator
+      (not_operator
+        (identifier))
+      (boolean_operator
+        (identifier)
+        (comparison_operator
+          (identifier)
+          (binary_operator
+            (identifier)
+            (binary_operator
+              (identifier)
+              (binary_operator
+                (identifier)
+                (binary_operator
+                  (identifier)
+                  (unary_operator
+                    (filter_expression
+                      (identifier)
+                      (identifier)))))))))))
+  (content))
+
+============================================================
+membership
+============================================================
+{{ a in b and c not in d }}
+
+------------------------------------------------------------
+
+(source_file
+  (output
+    (boolean_operator
+      (comparison_operator
+        (identifier)
+        (identifier))
+      (comparison_operator
+        (identifier)
+        (identifier))))
+  (content))
+
+============================================================
+conditional
+============================================================
+{{ a if b else c }}{{ a if b }}
+
+------------------------------------------------------------
+
+(source_file
+  (output
+    (conditional_expression
+      (identifier)
+      (identifier)
+      (identifier)))
+  (output
+    (conditional_expression
+      (identifier)
+      (identifier)))
+  (content))
+
+============================================================
+literals
+============================================================
+{{ [1, 2.5, 1e3, 0x1F, true, False, none, None, 'a\'b', (), (1,), (1, 2), {}] }}
+
+------------------------------------------------------------
+
+(source_file
+  (output
+    (list
+      (integer)
+      (float)
+      (float)
+      (integer)
+      (boolean)
+      (boolean)
+      (none)
+      (none)
+      (string
+        (string_content)
+        (escape_sequence)
+        (string_content))
+      (tuple)
+      (tuple
+        (integer))
+      (tuple
+        (integer)
+        (integer))
+      (dict)))
+  (content))
+
+============================================================
+adjacent strings join
+============================================================
+{{ "a" 'b'
+   "c" ~ x }}
+
+------------------------------------------------------------
+
+(source_file
+  (output
+    (binary_operator
+      (concatenated_string
+        (string
+          (string_content))
+        (string
+          (string_content))
+        (string
+          (string_content)))
+      (identifier)))
+  (content))
+
+============================================================
+a tuple in a subscript
+============================================================
+{{ validation.any['a', 'b'] }}
+
+------------------------------------------------------------
+
+(source_file
+  (output
+    (subscript
+      (attribute
+        (identifier)
+        (identifier))
+      (tuple
+        (string
+          (string_content))
+        (string
+          (string_content)))))
+  (content))

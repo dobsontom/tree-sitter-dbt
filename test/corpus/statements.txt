@@ -1,0 +1,264 @@
+============================================================
+if, elif and else
+============================================================
+{% if a %}1{% elif b %}2{% elif c %}{% else %}3{% endif %}
+
+------------------------------------------------------------
+
+(source_file
+  (if_statement
+    (identifier)
+    (content)
+    (elif_clause
+      (identifier)
+      (content))
+    (elif_clause
+      (identifier))
+    (else_clause
+      (content)))
+  (content))
+
+============================================================
+a colon after a condition
+============================================================
+{%- if execute: -%}x{%- else: %}y{% endif %}
+
+------------------------------------------------------------
+
+(source_file
+  (if_statement
+    (identifier)
+    (content)
+    (else_clause
+      (content)))
+  (content))
+
+============================================================
+nested blocks
+============================================================
+{% if a %}{% for x in xs %}{% if x %}{{ x }}{% endif %}{% endfor %}{% endif %}
+
+------------------------------------------------------------
+
+(source_file
+  (if_statement
+    (identifier)
+    (for_statement
+      (identifier)
+      (identifier)
+      (if_statement
+        (identifier)
+        (output
+          (identifier)))))
+  (content))
+
+============================================================
+for with a filter, recursive and else
+============================================================
+{% for k, v in d.items() if v recursive %}{{ k }}{% else %}none{% endfor %}
+
+------------------------------------------------------------
+
+(source_file
+  (for_statement
+    (tuple
+      (identifier)
+      (identifier))
+    (call
+      (attribute
+        (identifier)
+        (identifier))
+      (argument_list))
+    (identifier)
+    (output
+      (identifier))
+    (else_clause
+      (content)))
+  (content))
+
+============================================================
+for over a tuple target and a bare tuple
+============================================================
+{% for (a, b), c in x, y %}{% break %}{% continue %}{% endfor %}
+
+------------------------------------------------------------
+
+(source_file
+  (for_statement
+    (tuple
+      (target_tuple
+        (identifier)
+        (identifier))
+      (identifier))
+    (tuple
+      (identifier)
+      (identifier))
+    (break_statement)
+    (continue_statement))
+  (content))
+
+============================================================
+set
+============================================================
+{% set a = 1 %}{% set a, b = 1, 2 %}{% set ns.x = ns.x + 1 %}
+
+------------------------------------------------------------
+
+(source_file
+  (set_statement
+    (identifier)
+    (integer))
+  (set_statement
+    (tuple
+      (identifier)
+      (identifier))
+    (tuple
+      (integer)
+      (integer)))
+  (set_statement
+    (attribute
+      (identifier)
+      (identifier))
+    (binary_operator
+      (attribute
+        (identifier)
+        (identifier))
+      (integer)))
+  (content))
+
+============================================================
+set block with a filter
+============================================================
+{% set sql | trim %}
+select 1
+{% endset %}
+
+------------------------------------------------------------
+
+(source_file
+  (set_block
+    (identifier)
+    (filter_chain
+      (identifier))
+    (content))
+  (content))
+
+============================================================
+macro
+============================================================
+{% macro grant(relation, role='x',) %}grant {{ role }}{% endmacro grant %}
+
+------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (parameters
+      (identifier)
+      (default_parameter
+        (identifier)
+        (string
+          (string_content))))
+    (content)
+    (output
+      (identifier))
+    (identifier))
+  (content))
+
+============================================================
+call block
+============================================================
+{% call statement('main', fetch_result=True) %}select 1{% endcall %}{% call(row) render(rows) %}{{ row }}{% endcall %}
+
+------------------------------------------------------------
+
+(source_file
+  (call_block
+    (call
+      (identifier)
+      (argument_list
+        (string
+          (string_content))
+        (keyword_argument
+          (identifier)
+          (boolean))))
+    (content))
+  (call_block
+    (parameters
+      (identifier))
+    (call
+      (identifier)
+      (argument_list
+        (identifier)))
+    (output
+      (identifier)))
+  (content))
+
+============================================================
+filter block
+============================================================
+{% filter upper | trim %}x{% endfilter %}
+
+------------------------------------------------------------
+
+(source_file
+  (filter_block
+    (filter_chain
+      (identifier)
+      (identifier))
+    (content))
+  (content))
+
+============================================================
+raw block
+============================================================
+{% raw %}{{ not parsed }}{% if %}{%- endraw -%}
+{%raw%}{%endraw%}
+
+------------------------------------------------------------
+
+(source_file
+  (raw_block
+    (raw_content))
+  (content)
+  (raw_block)
+  (content))
+
+============================================================
+with, do, include and imports
+============================================================
+{% with a = 1, b = 2 %}{% do xs.append(a) %}{% endwith %}{% include 'x.sql' ignore missing with context %}{% import 'm' as m %}{% from 'm' import a, b as c without context %}
+
+------------------------------------------------------------
+
+(source_file
+  (with_block
+    (assignment
+      (identifier)
+      (integer))
+    (assignment
+      (identifier)
+      (integer))
+    (do_statement
+      (call
+        (attribute
+          (identifier)
+          (identifier))
+        (argument_list
+          (identifier)))))
+  (include_statement
+    (string
+      (string_content)))
+  (import_statement
+    (string
+      (string_content))
+    (identifier))
+  (from_import_statement
+    (string
+      (string_content))
+    (import_name
+      (identifier))
+    (import_name
+      (identifier)
+      (identifier)))
+  (content))

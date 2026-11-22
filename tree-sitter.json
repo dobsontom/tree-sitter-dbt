@@ -1,0 +1,39 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "dbt",
+      "camelcase": "Dbt",
+      "title": "dbt",
+      "scope": "source.dbt",
+      "file-types": ["dbt"],
+      "injection-regex": "^(dbt|jinja-sql)$",
+      "highlights": "queries/highlights.scm",
+      "injections": "queries/injections.scm",
+      "folds": "queries/folds.scm"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "dbt models and macros: Jinja over SQL",
+    "authors": [
+      {
+        "name": "sirh3e"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/sirh3e/tree-sitter-dbt"
+    },
+    "namespace": "io.github.sirh3e"
+  },
+  "bindings": {
+    "c": true,
+    "go": false,
+    "node": true,
+    "python": true,
+    "rust": true,
+    "swift": false,
+    "zig": false
+  }
+}

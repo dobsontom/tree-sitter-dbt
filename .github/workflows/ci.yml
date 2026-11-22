@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: The committed parser is the generated one
+        run: |
+          npx tree-sitter generate
+          git diff --exit-code -- src
+      - name: Corpus and highlight tests
+        run: npx tree-sitter test
+      - name: Real dbt code parses without an error
+        run: PATH="$PWD/node_modules/.bin:$PATH" ./script/parse-examples
+      - name: Node binding
+        run: npm test
+      - name: Rust binding
+        run: cargo test
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Python binding
+        run: |
+          pip install . tree-sitter
+          python -m unittest discover -s bindings/python/tests

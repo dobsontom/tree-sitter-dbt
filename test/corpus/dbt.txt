@@ -1,0 +1,151 @@
+============================================================
+materialization
+============================================================
+{% materialization table, adapter='snowflake', supported_languages=['sql', 'python'] %}
+{{ return({'relations': [this]}) }}
+{% endmaterialization %}
+{% materialization view, default %}{% endmaterialization %}
+
+------------------------------------------------------------
+
+(source_file
+  (materialization_definition
+    (identifier)
+    (keyword_argument
+      (identifier)
+      (string
+        (string_content)))
+    (keyword_argument
+      (identifier)
+      (list
+        (string
+          (string_content))
+        (string
+          (string_content))))
+    (content)
+    (output
+      (call
+        (identifier)
+        (argument_list
+          (dict
+            (pair
+              (string
+                (string_content))
+              (list
+                (identifier)))))))
+    (content))
+  (content)
+  (materialization_definition
+    (identifier)
+    (identifier))
+  (content))
+
+============================================================
+generic test
+============================================================
+{% test not_null(model, column_name) %}
+select * from {{ model }} where {{ column_name }} is null
+{% endtest %}
+
+------------------------------------------------------------
+
+(source_file
+  (test_definition
+    (identifier)
+    (parameters
+      (identifier)
+      (identifier))
+    (content)
+    (output
+      (identifier))
+    (content)
+    (output
+      (identifier))
+    (content))
+  (content))
+
+============================================================
+snapshot
+============================================================
+{% snapshot orders_snapshot %}
+{{ config(strategy='timestamp') }}
+select * from {{ source('raw', 'orders') }}
+{% endsnapshot %}
+
+------------------------------------------------------------
+
+(source_file
+  (snapshot_block
+    (identifier)
+    (content)
+    (output
+      (call
+        (identifier)
+        (argument_list
+          (keyword_argument
+            (identifier)
+            (string
+              (string_content))))))
+    (content)
+    (output
+      (call
+        (identifier)
+        (argument_list
+          (string
+            (string_content))
+          (string
+            (string_content)))))
+    (content))
+  (content))
+
+============================================================
+docs block holds markdown
+============================================================
+{% docs orders %}
+# Orders
+One row per order, see {{ doc('x') }}.
+{% enddocs %}
+
+------------------------------------------------------------
+
+(source_file
+  (docs_block
+    (identifier)
+    (markdown_content)
+    (output
+      (call
+        (identifier)
+        (argument_list
+          (string
+            (string_content)))))
+    (markdown_content))
+  (content))
+
+============================================================
+incremental model
+============================================================
+select * from {{ ref('events') }}
+{% if is_incremental() %}
+where ts > (select max(ts) from {{ this }})
+{% endif %}
+
+------------------------------------------------------------
+
+(source_file
+  (content)
+  (output
+    (call
+      (identifier)
+      (argument_list
+        (string
+          (string_content)))))
+  (content)
+  (if_statement
+    (call
+      (identifier)
+      (argument_list))
+    (content)
+    (output
+      (identifier))
+    (content))
+  (content))

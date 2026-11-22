@@ -1,0 +1,7 @@
+# Real dbt code the grammar must parse without an error: repository and commit.
+dbt-labs/dbt-utils a0a10fd3903262fc50c132547776f07cc7176c1b
+dbt-labs/dbt-adapters 959b7c89ae6fd59c835c93ef015916753c21aa65
+dbt-labs/jaffle-shop 5beb145b00f5465ec759cfcdd9745e858818cf95
+dbt-labs/dbt-codegen ec19358e76edf09db8ab1a11d69fa3140c6c08d4
+dbt-labs/dbt-audit-helper 71817f0a7fa3df9f63adb90db0cf28f7423f720b
+dbt-labs/dbt-project-evaluator 5104628df10b710dd3845c9f19155b94fccb940a

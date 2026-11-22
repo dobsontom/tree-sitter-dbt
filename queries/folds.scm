@@ -1,0 +1,17 @@
+[
+  (if_statement)
+  (elif_clause)
+  (else_clause)
+  (for_statement)
+  (macro_definition)
+  (call_block)
+  (filter_block)
+  (set_block)
+  (raw_block)
+  (with_block)
+  (materialization_definition)
+  (test_definition)
+  (snapshot_block)
+  (docs_block)
+  (comment)
+] @fold
